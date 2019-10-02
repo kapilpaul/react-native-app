@@ -29,6 +29,10 @@ export class SignIn extends Component {
       password: this.state.password
     };
 
+    AsyncStorage.setItem("userToken", "abcd");
+    this.props.navigation.navigate("Home");
+    return;
+
     if (loginData.email !== "" && loginData.password !== "") {
       axios
         .post(apiUrl + "login", loginData)
@@ -40,6 +44,8 @@ export class SignIn extends Component {
         .catch(error => {
           console.log(error.data);
         });
+    } else {
+      alert("Please enter email and password");
     }
   };
 

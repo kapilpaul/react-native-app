@@ -6,7 +6,8 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  AsyncStorage
+  AsyncStorage,
+  FlatList
 } from "react-native";
 
 import axios from "axios";
@@ -14,11 +15,25 @@ import axios from "axios";
 export class Home extends Component {
   constructor(props) {
     super(props);
+    this.state = { posts: [] };
   }
 
   static navigationOptions = {
-    header: null
+    title: "Home",
+    headerStyle: {
+      backgroundColor: "#2196F3"
+    },
+    headerTintColor: "#fff",
+    headerTitleStyle: {
+      textAlign: "center"
+    }
   };
+
+  componentDidMount() {
+    axios.get("https://jsonplaceholder.typicode.com/posts").then(response => {
+      this.setState({ posts: response.data });
+    });
+  }
 
   _onPressLogoutButton = async () => {
     await AsyncStorage.removeItem("userToken");
@@ -29,15 +44,21 @@ export class Home extends Component {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>Welcome Home Kapil!</Text>
-
-        <View style={{ flexDirection: "row", padding: 25 }}>
+        {/* <View style={{ flexDirection: "row", padding: 25 }}>
           <TouchableOpacity
             style={styles.buttonContainer}
             onPress={this._onPressLogoutButton}
           >
             <Text style={styles.loginText}>LogOut</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
+
+        <FlatList
+          data={this.state.posts}
+          renderItem={({ item }) => (
+            <Text style={styles.singlePost}>{item.title}</Text>
+          )}
+        />
       </View>
     );
   }
@@ -47,15 +68,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#4fc3f7",
-    alignSelf: "stretch"
+    alignItems: "flex-start",
+    backgroundColor: "#fff",
+    alignSelf: "stretch",
+    padding: 15
   },
   welcome: {
     fontSize: 25,
     textAlign: "center",
     margin: 10,
-    color: "#eceff1",
+    color: "#212121",
     fontWeight: "bold"
   },
   instructions: {
@@ -83,5 +105,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     padding: 8,
     fontWeight: "bold"
+  },
+  singlePost: {
+    color: "#757575",
+    marginBottom: 10
   }
 });
