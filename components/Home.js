@@ -11,12 +11,14 @@ import {
 } from "react-native";
 
 import axios from "axios";
+const apiUrl = "https://tarek.kapilpaul.me/api/";
 
 export class Home extends Component {
   constructor(props) {
     super(props);
-    this.state = { posts: [] };
   }
+
+  state = { posts: [] };
 
   static navigationOptions = {
     title: "Home",
@@ -29,36 +31,55 @@ export class Home extends Component {
     }
   };
 
-  componentDidMount() {
-    axios.get("https://jsonplaceholder.typicode.com/posts").then(response => {
-      this.setState({ posts: response.data });
-    });
-  }
+  componentDidMount = async () => {
+    let token = await this.__getHeader();
 
-  _onPressLogoutButton = async () => {
-    await AsyncStorage.removeItem("userToken");
-    this.props.navigation.navigate("Auth");
+    axios
+      .get(apiUrl + "customer", data, token)
+      .then(response => {
+        console.log(response);
+        // this.setState({ posts: response.data });
+      })
+      .catch(error => {
+        console.log(error.response.data);
+      });
+  };
+
+  __getHeader = async () => {
+    const tokenData = await AsyncStorage.getItem("userToken");
+    return {
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer " + tokenData
+      }
+    };
+  };
+
+  _onPressAddButton = async () => {
+    // await AsyncStorage.removeItem("userToken");
+    this.props.navigation.navigate("CustomerCreate");
   };
 
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome Home Kapil!</Text>
-        {/* <View style={{ flexDirection: "row", padding: 25 }}>
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={this._onPressLogoutButton}
-          >
-            <Text style={styles.loginText}>LogOut</Text>
-          </TouchableOpacity>
-        </View> */}
-
         <FlatList
           data={this.state.posts}
-          renderItem={({ item }) => (
-            <Text style={styles.singlePost}>{item.title}</Text>
+          renderItem={({ item, index }) => (
+            <Text style={styles.singlePost}>
+              {index + 1}. {item}
+            </Text>
           )}
         />
+
+        <View style={styles.floatingAddBtn}>
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={this._onPressAddButton}
+          >
+            <Text style={styles.floatingAddBtnText}>+</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -71,43 +92,47 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     backgroundColor: "#fff",
     alignSelf: "stretch",
-    padding: 15
+    padding: 15,
+    paddingRight: 0
   },
   welcome: {
-    fontSize: 25,
+    fontSize: 20,
     textAlign: "center",
-    margin: 10,
     color: "#212121",
-    fontWeight: "bold"
-  },
-  instructions: {
-    textAlign: "center",
-    color: "#333333",
-    marginBottom: 5
-  },
-  formControl: {
-    width: "100%",
-    height: 50,
-    padding: 15,
-    backgroundColor: "#fff",
-    marginBottom: 15,
-    borderRadius: 4,
-    textAlign: "center"
+    fontWeight: "bold",
+    marginBottom: 20
   },
   buttonContainer: {
-    backgroundColor: "#fff176",
+    backgroundColor: "#448AFF",
     padding: 7,
-    borderRadius: 4,
+    borderRadius: 500,
     color: "#000",
-    flex: 1
+    // flex: 1,
+    width: 60,
+    height: 60
   },
-  loginText: {
+  floatingAddBtnText: {
     textAlign: "center",
-    padding: 8,
-    fontWeight: "bold"
+    padding: 3,
+    fontWeight: "bold",
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "#fff"
   },
   singlePost: {
     color: "#757575",
-    marginBottom: 10
+    marginBottom: 10,
+    fontSize: 16,
+    borderBottomWidth: 1,
+    paddingBottom: 15,
+    borderColor: "#BDBDBD",
+    lineHeight: 25,
+    marginRight: 15
+  },
+  floatingAddBtn: {
+    flexDirection: "row",
+    position: "absolute",
+    right: 10,
+    bottom: 10
   }
 });

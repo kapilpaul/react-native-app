@@ -29,9 +29,9 @@ export class SignIn extends Component {
       password: this.state.password
     };
 
-    AsyncStorage.setItem("userToken", "abcd");
-    this.props.navigation.navigate("Home");
-    return;
+    // AsyncStorage.setItem("userToken", "abcd");
+    // this.props.navigation.navigate("Home");
+    // return;
 
     if (loginData.email !== "" && loginData.password !== "") {
       axios

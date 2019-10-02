@@ -19,6 +19,7 @@ import { createStackNavigator } from "react-navigation-stack";
 
 import { SignIn } from "./components/SignIn";
 import { Home } from "./components/Home";
+import { CustomerCreate } from "./components/Customer/create";
 
 class AuthLoadingScreen extends Component {
   constructor(props) {
@@ -55,7 +56,10 @@ const styles = StyleSheet.create({
   }
 });
 
-const AppStack = createStackNavigator({ Home: Home });
+const AppStack = createStackNavigator({
+  Home: Home,
+  CustomerCreate: CustomerCreate
+});
 const AuthStack = createStackNavigator({ SignIn: SignIn });
 
 export default createAppContainer(
