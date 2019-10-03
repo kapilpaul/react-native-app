@@ -13,12 +13,12 @@ import {
 import axios from "axios";
 const apiUrl = "https://tarek.kapilpaul.me/api/";
 
-export class Home extends Component {
+export class Home extends React.Component {
   constructor(props) {
     super(props);
   }
 
-  state = { posts: [] };
+  state = { customers: [] };
 
   static navigationOptions = {
     title: "Home",
@@ -35,10 +35,9 @@ export class Home extends Component {
     let token = await this.__getHeader();
 
     axios
-      .get(apiUrl + "customer", data, token)
+      .get(apiUrl + "customer", token)
       .then(response => {
-        console.log(response);
-        // this.setState({ posts: response.data });
+        this.setState({ customers: response.data.customers.data });
       })
       .catch(error => {
         console.log(error.response.data);
@@ -64,12 +63,13 @@ export class Home extends Component {
     return (
       <View style={styles.container}>
         <FlatList
-          data={this.state.posts}
+          data={this.state.customers}
           renderItem={({ item, index }) => (
             <Text style={styles.singlePost}>
-              {index + 1}. {item}
+              {index + 1}. {item.name} - {item.mobile}
             </Text>
           )}
+          keyExtractor={(item, index) => index.toString()}
         />
 
         <View style={styles.floatingAddBtn}>
@@ -127,7 +127,8 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
     borderColor: "#BDBDBD",
     lineHeight: 25,
-    marginRight: 15
+    marginRight: 15,
+    width: "100%"
   },
   floatingAddBtn: {
     flexDirection: "row",
