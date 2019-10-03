@@ -7,7 +7,9 @@ import {
   TextInput,
   TouchableOpacity,
   AsyncStorage,
-  FlatList
+  FlatList,
+  Alert,
+  Linking
 } from "react-native";
 
 import axios from "axios";
@@ -42,6 +44,16 @@ export class Home extends React.Component {
       .catch(error => {
         console.log(error.response.data);
       });
+
+    // axios
+    //   .get("https://jsonplaceholder.typicode.com/posts")
+    //   .then(response => {
+    //     console.log(response.data);
+    //     this.setState({ customers: response.data });
+    //   })
+    //   .catch(error => {
+    //     console.log(error.response.data);
+    //   });
   };
 
   __getHeader = async () => {
@@ -59,18 +71,72 @@ export class Home extends React.Component {
     this.props.navigation.navigate("CustomerCreate");
   };
 
+  _onLongPressListItem(mobile) {
+    console.log(mobile);
+    // alert(name);
+    Alert.alert(
+      "Actions",
+      "",
+      [
+        {
+          text: "Call",
+          onPress: () => {
+            let phoneNumber = mobile; //"01711545454";
+            console.log("inside", mobile);
+            if (Platform.OS !== "android") {
+              phoneNumber = `telprompt:${mobile}`;
+            } else {
+              phoneNumber = `tel:${mobile}`;
+            }
+            Linking.canOpenURL(phoneNumber)
+              .then(supported => {
+                if (!supported) {
+                  Alert.alert("Phone number is not available");
+                } else {
+                  return Linking.openURL(phoneNumber);
+                }
+              })
+              .catch(err => console.log(err));
+          }
+        },
+        {
+          text: "Cancel",
+          style: "cancel"
+        }
+      ],
+      { cancelable: true }
+    );
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <FlatList
-          data={this.state.customers}
-          renderItem={({ item, index }) => (
-            <Text style={styles.singlePost}>
-              {index + 1}. {item.name} - {item.mobile}
-            </Text>
-          )}
-          keyExtractor={(item, index) => index.toString()}
-        />
+        <View style={{ width: "100%" }}>
+          <FlatList
+            data={this.state.customers}
+            renderItem={({ item, index }) => (
+              <View style={styles.singlePostArea}>
+                <TouchableOpacity
+                  style={styles.listTouchContainer}
+                  onLongPress={() => this._onLongPressListItem(item.mobile)}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between"
+                    }}
+                  >
+                    <Text style={styles.singlePost}>
+                      {index + 1}. {item.name}
+                    </Text>
+                    <Text style={styles.singlePost}>{item.balance}</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </View>
 
         <View style={styles.floatingAddBtn}>
           <TouchableOpacity
@@ -88,11 +154,11 @@ export class Home extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "flex-start",
-    backgroundColor: "#fff",
+    backgroundColor: "#ddd",
     alignSelf: "stretch",
-    padding: 15,
+    padding: 0,
     paddingRight: 0
   },
   welcome: {
@@ -107,7 +173,6 @@ const styles = StyleSheet.create({
     padding: 7,
     borderRadius: 500,
     color: "#000",
-    // flex: 1,
     width: 60,
     height: 60
   },
@@ -119,16 +184,19 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#fff"
   },
+  singlePostArea: {},
+  listTouchContainer: {
+    backgroundColor: "#fff",
+    marginBottom: 15,
+    padding: 15
+  },
   singlePost: {
     color: "#757575",
-    marginBottom: 10,
     fontSize: 16,
     borderBottomWidth: 1,
-    paddingBottom: 15,
     borderColor: "#BDBDBD",
     lineHeight: 25,
-    marginRight: 15,
-    width: "100%"
+    marginRight: 15
   },
   floatingAddBtn: {
     flexDirection: "row",
