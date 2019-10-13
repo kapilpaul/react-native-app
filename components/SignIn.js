@@ -6,7 +6,8 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  AsyncStorage
+  AsyncStorage,
+  NetInfo
 } from "react-native";
 
 import axios from "axios";
@@ -23,31 +24,49 @@ export class SignIn extends Component {
     this.state = { email: "", password: "" };
   }
 
+  state = {
+    netConnected: true
+  };
+
   _onPressLoginButton = async () => {
-    let loginData = {
-      email: this.state.email,
-      password: this.state.password
-    };
+    await NetInfo.isConnected.fetch().then(isConnected => {
+      this.setState({ netConnected: isConnected });
+    });
 
-    // AsyncStorage.setItem("userToken", "abcd");
-    // this.props.navigation.navigate("Home");
-    // return;
+    if (this.state.netConnected) {
+      let loginData = {
+        email: this.state.email,
+        password: this.state.password
+      };
 
-    if (loginData.email !== "" && loginData.password !== "") {
-      axios
-        .post(apiUrl + "login", loginData)
-        .then(response => {
-          AsyncStorage.setItem("userToken", response.data.access_token);
-          // AsyncStorage.setItem("expiration", response.data.expiration);
-          this.props.navigation.navigate("Home");
-        })
-        .catch(error => {
-          console.log(error.data);
-        });
-    } else {
-      alert("Please enter email and password");
+      if (loginData.email !== "" && loginData.password !== "") {
+        axios
+          .post(apiUrl + "login", loginData)
+          .then(response => {
+            AsyncStorage.setItem("userToken", response.data.access_token);
+            // AsyncStorage.setItem("expiration", response.data.expiration);
+            this.props.navigation.navigate("Home");
+          })
+          .catch(error => {
+            console.log(error.data);
+          });
+      } else {
+        alert("Please enter email and password");
+      }
     }
   };
+
+  internetCheckElement() {
+    if (!this.state.netConnected) {
+      return (
+        <View style={{ width: "100%", position: "absolute", bottom: 0 }}>
+          <Text style={styles.netConnectionText}>
+            Please check your internet connection
+          </Text>
+        </View>
+      );
+    }
+  }
 
   render() {
     return (
@@ -82,6 +101,8 @@ export class SignIn extends Component {
             </TouchableOpacity>
           </View>
         </View>
+
+        {this.internetCheckElement()}
       </View>
     );
   }
@@ -101,6 +122,13 @@ const styles = StyleSheet.create({
     margin: 10,
     color: "#eceff1",
     fontWeight: "bold"
+  },
+  netConnectionText: {
+    fontSize: 12,
+    textAlign: "center",
+    color: "#eceff1",
+    backgroundColor: "#FF5252",
+    padding: 6
   },
   instructions: {
     textAlign: "center",
