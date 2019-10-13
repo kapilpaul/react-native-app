@@ -5,7 +5,8 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  AsyncStorage
+  AsyncStorage,
+  StatusBar
 } from "react-native";
 
 import axios from "axios";
@@ -76,6 +77,7 @@ export class CustomerCreate extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <StatusBar backgroundColor="#2196F3" animated={true} />
         <View style={{ width: "100%", padding: 15 }}>
           <TextInput
             style={styles.formControl}

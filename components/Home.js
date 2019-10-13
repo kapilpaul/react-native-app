@@ -193,7 +193,6 @@ const styles = StyleSheet.create({
   singlePost: {
     color: "#757575",
     fontSize: 16,
-    borderBottomWidth: 1,
     borderColor: "#BDBDBD",
     lineHeight: 25,
     marginRight: 15
