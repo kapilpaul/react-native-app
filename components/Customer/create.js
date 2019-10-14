@@ -8,6 +8,7 @@ import {
   AsyncStorage,
   StatusBar
 } from "react-native";
+import PushNotification from "react-native-push-notification";
 
 import axios from "axios";
 const apiUrl = "https://tarek.kapilpaul.me/api/";
@@ -62,6 +63,15 @@ export class CustomerCreate extends Component {
       .catch(error => {
         console.log(error.response.data);
       });
+  };
+
+  _onPressNotificationButton = async () => {
+    let data = PushNotification.localNotification({
+      // /* iOS and Android properties */
+      title: "Test N", // (optional)
+      message: "My Notification Message TEST", // (required)
+      actions: '["Yes", "No"]' // (Android only) See the doc for notification actions to know more
+    });
   };
 
   __getHeader = async () => {
@@ -139,7 +149,7 @@ export class CustomerCreate extends Component {
           <View style={{ flexDirection: "row" }}>
             <TouchableOpacity
               style={styles.buttonContainer}
-              onPress={this._onPressCreateButton}
+              onPress={this._onPressNotificationButton}
             >
               <Text style={styles.loginText}>Create</Text>
             </TouchableOpacity>

@@ -36,14 +36,14 @@ export class Home extends React.Component {
   componentDidMount = async () => {
     let token = await this.__getHeader();
 
-    axios
-      .get(apiUrl + "customer", token)
-      .then(response => {
-        this.setState({ customers: response.data.customers.data });
-      })
-      .catch(error => {
-        console.log(error.response.data);
-      });
+    // axios
+    //   .get(apiUrl + "customer", token)
+    //   .then(response => {
+    //     this.setState({ customers: response.data.customers.data });
+    //   })
+    //   .catch(error => {
+    //     console.log(error.response.data);
+    //   });
 
     // axios
     //   .get("https://jsonplaceholder.typicode.com/posts")
