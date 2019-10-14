@@ -66,11 +66,31 @@ export class CustomerCreate extends Component {
   };
 
   _onPressNotificationButton = async () => {
-    let data = PushNotification.localNotification({
-      // /* iOS and Android properties */
-      title: "Test N", // (optional)
-      message: "My Notification Message TEST", // (required)
-      actions: '["Yes", "No"]' // (Android only) See the doc for notification actions to know more
+    PushNotification.configure({
+      // (optional) Called when Token is generated (iOS and Android)
+      onRegister: function(token) {
+        console.log("TOKEN:", token);
+      },
+
+      // (required) Called when a remote or local notification is opened or received
+      onNotification: function(notification) {
+        console.log("NOTIFICATION:", notification);
+      },
+      popInitialNotification: true,
+      requestPermissions: true
+    });
+
+    // PushNotification.localNotification({
+    //   // /* iOS and Android properties */
+    //   title: "Kapil", // (optional)
+    //   message: "My Notification Message TEST", // (required)
+    //   actions: '["Accept", "Reject"]' // (Android only) See the doc for notification actions to know more
+    // });
+
+    PushNotification.localNotificationSchedule({
+      message: "My Scheduled Notification Message", // (required)
+      date: new Date(Date.now() + 10 * 1000), // in 60 secs
+      actions: '["View"]'
     });
   };
 
